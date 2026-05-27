@@ -5,15 +5,17 @@ export PROJECT_ROOT=$(shell pwd)
 
 
 env-up:
-	@docker compose up -d todoapp-postgres
+	@docker compose up -d todoapp-postgres port-forwarder
+	sleep 5
+	@sudo chmod -R 777 out/pgdata
 
 env-down:
-	@docker compose down todoapp-postgres
+	@docker compose down todoapp-postgres port-forwarder
 
 env-cleanup:
 	@read -p "Clear volumes file? DANGER lose file. [y/N]: " ans; \
 	if [ "$$ans" = "y" ]; then \
-		docker compose down todoapp-postgres && \
+		docker compose down todoapp-postgres port-forwarder && \
 		sudo rm -rf out/pgdata && \
 		echo "file env clear"; \
 	else \
@@ -50,7 +52,7 @@ migrate-action:
 		echo "no parameter action: (make migration-action action=up, down)"; \
 		exit 1; \
 	fi; \
-	docker compose run --rm todoapp-postgres-migrate \
+	docker compose run --rm --user $$(id -u):$$(id -g) todoapp-postgres-migrate \
 		-path /migrations \
 		-database postgres://${POSTGRES_USER}:${POSTGRES_PASSWORD}@todoapp-postgres:5432/${POSTGRES_DB}?sslmode=disable \
 		"$(action)"
@@ -66,3 +68,10 @@ migrate-force:
 		-path /migrations \
 		-database postgres://${POSTGRES_USER}:${POSTGRES_PASSWORD}@todoapp-postgres:5432/${POSTGRES_DB}?sslmode=disable \
 		force $(version)
+
+
+todoapp-run:
+	@export LOGGER_FOLDER=$(PROJECT_ROOT)/out/logs && \
+	export POSTGRES_HOST=localhost && \
+	go mod tidy && \
+	go run cmd/todoapp/main.go
