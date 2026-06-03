@@ -3,6 +3,8 @@ package core_http_server
 import (
 	"fmt"
 	"net/http"
+
+	core_http_middleware "github.com/jettyjunk/goland-todoapp/internal/core/transport/http/middleware"
 )
 
 type ApiVersion string
@@ -16,12 +18,14 @@ var (
 type APIVersionRoter struct {
 	*http.ServeMux
 	apiVersion ApiVersion
+	middleware []core_http_middleware.Middleware
 }
 
-func NewAPIVersionRouter(apiVersion ApiVersion) *APIVersionRoter {
+func NewAPIVersionRouter(apiVersion ApiVersion, middleware ...core_http_middleware.Middleware) *APIVersionRoter {
 	return &APIVersionRoter{
 		ServeMux:   http.NewServeMux(),
 		apiVersion: apiVersion,
+		middleware: middleware,
 	}
 }
 
@@ -29,6 +33,13 @@ func (r *APIVersionRoter) RegisterRoutes(routes ...Route) {
 	for _, router := range routes {
 		pattern := fmt.Sprintf("%s %s", router.Method, router.Path)
 
-		r.Handle(pattern, router.Handler)
+		r.Handle(pattern, router.WithMiddleware())
 	}
+}
+
+func (r *APIVersionRoter) WithMiddleware() http.Handler {
+	return core_http_middleware.ChainMiddleware(
+		r,
+		r.middleware...,
+	)
 }

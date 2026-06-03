@@ -6,7 +6,6 @@ export PROJECT_ROOT=$(shell pwd)
 
 env-up:
 	@docker compose up -d todoapp-postgres port-forwarder
-	sleep 5
 	@sudo chmod -R 777 out/pgdata
 
 env-down:
@@ -16,7 +15,7 @@ env-cleanup:
 	@read -p "Clear volumes file? DANGER lose file. [y/N]: " ans; \
 	if [ "$$ans" = "y" ]; then \
 		docker compose down todoapp-postgres port-forwarder && \
-		sudo rm -rf out/pgdata && \
+		sudo rm -rf ${PROJECT_ROOT}/out/pgdata && \
 		echo "file env clear"; \
 	else \
 		echo "file env cancel"; \
@@ -74,4 +73,4 @@ todoapp-run:
 	@export LOGGER_FOLDER=$(PROJECT_ROOT)/out/logs && \
 	export POSTGRES_HOST=localhost && \
 	go mod tidy && \
-	go run cmd/todoapp/main.go
+	go run $(PROJECT_ROOT)/cmd/todoapp/main.go
