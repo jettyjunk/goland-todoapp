@@ -13,6 +13,9 @@ import (
 	core_pgx_pool "github.com/jettyjunk/goland-todoapp/internal/core/repository/postgres/pool/pgx"
 	core_http_middleware "github.com/jettyjunk/goland-todoapp/internal/core/transport/http/middleware"
 	core_http_server "github.com/jettyjunk/goland-todoapp/internal/core/transport/http/server"
+	statistics_postgres_repository "github.com/jettyjunk/goland-todoapp/internal/features/statistics/repository/postgres"
+	statistics_service "github.com/jettyjunk/goland-todoapp/internal/features/statistics/service"
+	statistics_transport_http "github.com/jettyjunk/goland-todoapp/internal/features/statistics/transport/http"
 	tasks_postgres_repository "github.com/jettyjunk/goland-todoapp/internal/features/tasks/repository/postgres"
 	tasks_service "github.com/jettyjunk/goland-todoapp/internal/features/tasks/service"
 	tasks_transport_http "github.com/jettyjunk/goland-todoapp/internal/features/tasks/transport/http"
@@ -40,26 +43,31 @@ func main() {
 	}
 	defer logger.Close()
 
-	logger.Debug("initizaling postgres connection pool")
+	logger.Debug("initializing postgres connection pool")
 	pool, err := core_pgx_pool.NewPool(ctx, core_pgx_pool.NewConfigMust())
 	if err != nil {
 		logger.Fatal("failed to init postgres connection pool: %w", zap.Error(err))
 	}
 	defer pool.Close()
 
-	logger.Debug("application time zone", zap.Any("zone", timeZone))
+	logger.Debug("application time zone", zap.Any("zone", time.Local))
 
-	logger.Debug("initizaling feature", zap.String("feature", "users"))
+	logger.Debug("initializing feature", zap.String("feature", "users"))
 	usersRepository := users_postgres_repository.NewUsersRepository(pool)
 	usersService := users_service.NewUsersSevice(usersRepository)
 	userTransportHTTP := users_transport_http.NewUsersHTTPHandler(usersService)
 
-	logger.Debug("initizaling feature", zap.String("featire", "tasks"))
+	logger.Debug("initializing feature", zap.String("feature", "tasks"))
 	tasksRepository := tasks_postgres_repository.NewTasksRepository(pool)
 	tasksService := tasks_service.NewTasksService(tasksRepository)
 	tasksTransportHTTP := tasks_transport_http.NewTasksHTTPHandler(tasksService)
 
-	logger.Debug("initizaling HTTP server")
+	logger.Debug("initializing feature", zap.String("feature", "statistics"))
+	statisticsRepository := statistics_postgres_repository.NewStatisticsRepository(pool)
+	statisticsService := statistics_service.NewStatisticsService(statisticsRepository)
+	statisticsTransportHTTP := statistics_transport_http.NewStatisticsHTTPHandler(statisticsService)
+
+	logger.Debug("initializing HTTP server")
 	httpServer := core_http_server.NewHTTPServer(
 		core_http_server.NewConfigMust(),
 		logger,
@@ -71,6 +79,7 @@ func main() {
 	apiVersionRouterV1 := core_http_server.NewAPIVersionRouter(core_http_server.ApiVersion1)
 	apiVersionRouterV1.RegisterRoutes(userTransportHTTP.Routes()...)
 	apiVersionRouterV1.RegisterRoutes(tasksTransportHTTP.Routes()...)
+	apiVersionRouterV1.RegisterRoutes(statisticsTransportHTTP.Routes()...)
 	httpServer.RegisterAPIRouter(apiVersionRouterV1)
 
 	if err := httpServer.Run(ctx); err != nil {
