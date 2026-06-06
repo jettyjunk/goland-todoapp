@@ -33,11 +33,11 @@ func (r *PatchUserRequest) Validate() error {
 		if r.PhoneNumber.Value != nil {
 			phoneNumberLen := len([]rune(*r.PhoneNumber.Value))
 			if phoneNumberLen < 10 || phoneNumberLen > 15 {
-				return fmt.Errorf("`PhoneNumber must be between 10 and 15 sybols`")
+				return fmt.Errorf("`PhoneNumber must be between 10 and 15 symbols`")
 			}
 
 			if !strings.HasPrefix(*r.PhoneNumber.Value, "+") {
-				return fmt.Errorf("`PhoneNumber` must startswitch '+' symblo")
+				return fmt.Errorf("`PhoneNumber` must startswith '+' symbol")
 			}
 		}
 	}

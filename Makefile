@@ -69,6 +69,16 @@ migrate-force:
 		force $(version)
 
 
+logs-cleanup:
+	@read -p "Clear logs file? DANGER lose file. [y/N]: " ans; \
+	if [ "$$ans" = "y" ]; then \
+		sudo rm -rf ${PROJECT_ROOT}/out/logs && \
+		echo "file logs clear"; \
+	else \
+		echo "file logs clear cancel"; \
+	fi 
+
+
 todoapp-run:
 	@export LOGGER_FOLDER=$(PROJECT_ROOT)/out/logs && \
 	export POSTGRES_HOST=localhost && \
