@@ -1,3 +1,4 @@
+![CI](https://github.com/jettyjunk/goland-todoapp/actions/workflows/ci.yml/badge.svg)
 REST API для управления задачами (todo-приложение), написанное на Go.
 
 ## Технологии
