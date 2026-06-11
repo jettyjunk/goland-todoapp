@@ -847,9 +847,13 @@
     function initials(n) { return n.split(' ').slice(0, 2).map(w => w[0]).join('').toUpperCase(); }
     function fmtDate(s) { return s ? new Date(s).toLocaleDateString('ru', { day: 'numeric', month: 'short' }) : '' }
     function timeSince(s) {
-      const d = Math.floor((Date.now() - new Date(s)) / 60000);
-      if (d < 60) return d + 'м'; if (d < 1440) return Math.floor(d / 60) + 'ч';
-      return Math.floor(d / 1440) + 'д';
+      function timeSince(s) {
+        const d = Math.floor((Date.now() - new Date(s).getTime()) / 60000);
+        if (d < 0) return 'только что';
+        if (d < 60) return d + 'м';
+        if (d < 1440) return Math.floor(d / 60) + 'ч';
+        return Math.floor(d / 1440) + 'д';
+      }
     }
 
     async function loadAll() { await loadUsers(); await loadTasks(); }
