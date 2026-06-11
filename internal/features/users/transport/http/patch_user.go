@@ -13,8 +13,8 @@ import (
 )
 
 type PatchUserRequest struct {
-	FullName    core_http_types.Nullable[string] `json:"full_name"`
-	PhoneNumber core_http_types.Nullable[string] `json:"phone_number"`
+	FullName    core_http_types.Nullable[string] `json:"full_name" swaggertype:"string" example:"Jetty Junk"`
+	PhoneNumber core_http_types.Nullable[string] `json:"phone_number" swaggertype:"string" example:"+79998887766"`
 }
 
 func (r *PatchUserRequest) Validate() error {
@@ -47,6 +47,25 @@ func (r *PatchUserRequest) Validate() error {
 
 type PatchUserResponse UserDTOResponse
 
+// PatchUser 	godoc
+// @Summary 	Изменения пользователя
+// @Description Измение информации об уже существующем в системе пользователя
+// @Description ### Логика обновления полей (Theree-state logic):
+// @Description 1.**Поле не передано**: `phone_number` игнорируется, значение в БД не меняется
+// @Description 2.**Переданно значение**: `phone_number` "`+71112223344`" - устанавливает новый `phone_number` в БД
+// @Description 3.**Переданн null**: `"phone_number":null` - очищает поле в БД
+// @Description Ограничение `full_name` не может быть как null
+// @Tags 		users
+// @Accept 		json
+// @Produce 	json
+// @Param 		id path int true  										 "ID изменяемого пользователя"
+// @Param 		request body 			PatchUserRequest true 			 "PatchUser тело запроса"
+// @Success 	200 		{object} 	PatchUserResponse 				 "Успешно изменённый пользователь"
+// @Failure		400 		{object} 	core_http_response.ErrorResponse "Bad Request"
+// @Failure		404 		{object} 	core_http_response.ErrorResponse "User not found"
+// @Failure		409 		{object} 	core_http_response.ErrorResponse "Conflict"
+// @Failure 	500 		{object} 	core_http_response.ErrorResponse "Internal server error"
+// @Router 		/users/{id} [patch]
 func (h *UsersHTTPHandler) PatchUser(w http.ResponseWriter, r *http.Request) {
 	ctx := r.Context()
 	log := core_logger.FromContext(ctx)

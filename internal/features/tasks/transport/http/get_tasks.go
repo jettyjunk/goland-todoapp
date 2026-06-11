@@ -9,8 +9,20 @@ import (
 	core_http_response "github.com/jettyjunk/goland-todoapp/internal/core/transport/http/response"
 )
 
-type GetTasksResponse []TaskDTOResponse
+type GetTasksRespons []TaskDTOResponse
 
+// GetTasks 	godoc
+// @Summary 	Список задач
+// @Description Просмотр списка существующих задач с опциональной пагинацией и/или фильтрации по ID автора задачи
+// @Tags 		tasks
+// @Produce 	json
+// @Param 		user_id query int false 					  "Фильтрация задач по ID автора"
+// @Param 		limit 	query int false 					  "Размер старницы с задачами"
+// @Param 		offset 	query int false 					  "Смещение страницы с задачами"
+// @Success 	200	{object} GetTasksRespons 				  "Успешное получение списка задач"
+// @Failure		400 {object} core_http_response.ErrorResponse "Bad request"
+// @Failure 	500 {object} core_http_response.ErrorResponse "Internal server error"
+// @Router 		/tasks  [get]
 func (h *TasksHTTPHandler) GetTasks(w http.ResponseWriter, r *http.Request) {
 	ctx := r.Context()
 	log := core_logger.FromContext(ctx)
@@ -30,7 +42,7 @@ func (h *TasksHTTPHandler) GetTasks(w http.ResponseWriter, r *http.Request) {
 		return
 	}
 
-	response := GetTasksResponse(tasksDTOFromDomains(tasksDomains))
+	response := GetTasksRespons(tasksDTOFromDomains(tasksDomains))
 
 	reponseHandle.JsonResponse(response, http.StatusOK)
 }
@@ -57,5 +69,5 @@ func getUserIDLimitOffsetQueryParams(r *http.Request) (*int, *int, *int, error) 
 		return nil, nil, nil, fmt.Errorf("get 'offset' query param: %w", err)
 	}
 
-	return limit, offset, userID, err
+	return userID, limit, offset, err
 }

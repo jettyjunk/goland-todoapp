@@ -80,7 +80,8 @@ logs-cleanup:
 
 
 todoapp-run:
-	@export LOGGER_FOLDER=$(PROJECT_ROOT)/out/logs && \
+	@sudo chmod -R 777 out/pgdata && \
+	export LOGGER_FOLDER=$(PROJECT_ROOT)/out/logs && \
 	export POSTGRES_HOST=localhost && \
 	go mod tidy && \
 	go run $(PROJECT_ROOT)/cmd/todoapp/main.go
@@ -91,6 +92,17 @@ todoapp-deploy:
 
 todoapp-undeploy:
 	@docker compose down todoapp
+
+swagger-gen:
+	@docker compose run --rm swagger \
+		init \
+		-g cmd/todoapp/main.go \
+		-o docs \
+		--parseInternal \
+		--parseDependency
+
+swagger-build:
+	@docker compose build swagger
 
 ps:
 	@docker compose ps
