@@ -14,13 +14,18 @@ const (
 	requestIDHeader = "X-Request-ID"
 )
 
-func CORS() Middleware {
+func CORS(allowedOriginsList []string) Middleware {
+	allowedOrigins := make(map[string]struct{})
+	for _, origins := range allowedOriginsList {
+		allowedOrigins[origins] = struct{}{}
+	}
+
 	return func(next http.Handler) http.Handler {
 		return http.HandlerFunc(func(w http.ResponseWriter, r *http.Request) {
 			allowedOrigins := map[string]struct{}{
-				"http://localhost:5050": {},
-				"http://127.0.0.1:5050": {},
-				"null":                  {},
+				"http://http://84.38.180.76:5050": {},
+				"http://localhost:5050":           {},
+				"null":                            {},
 			}
 
 			origin := r.Header.Get("Origin")
