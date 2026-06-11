@@ -11,7 +11,7 @@ func (s *WebService) GetMainPage() ([]byte, error) {
 
 	htmlFile, err := s.webRepository.GetFile(htmlFilePath)
 	if err != nil {
-		return nil, fmt.Errorf("get httpFile %w:", err)
+		return nil, fmt.Errorf("get file repository %w:", err)
 	}
 
 	return htmlFile, nil
