@@ -1,0 +1,1025 @@
+<!DOCTYPE html>
+<html lang="ru" data-theme="light">
+
+<head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+  <title>TodoApp</title>
+  <link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/@tabler/icons-webfont@latest/tabler-icons.min.css" />
+  <style>
+    :root {
+      --bg: #f5f5f7;
+      --bg2: #ffffff;
+      --bg3: #f0f0f2;
+      --border: rgba(0, 0, 0, 0.08);
+      --border2: rgba(0, 0, 0, 0.14);
+      --text: #1d1d1f;
+      --text2: #6e6e73;
+      --text3: #a1a1a6;
+      --blue: #0071e3;
+      --blue-light: #e8f0fe;
+      --blue-text: #0063ca;
+      --green: #34c759;
+      --green-bg: #e9f9ee;
+      --green-text: #248a3d;
+      --red: #ff3b30;
+      --red-bg: #fff0ee;
+      --red-text: #c0392b;
+      --amber: #ff9500;
+      --amber-bg: #fff4e0;
+      --amber-text: #a05c00;
+      --sidebar-w: 220px;
+      --shadow: 0 1px 3px rgba(0, 0, 0, 0.07), 0 4px 12px rgba(0, 0, 0, 0.05);
+    }
+
+    [data-theme="dark"] {
+      --bg: #1c1c1e;
+      --bg2: #2c2c2e;
+      --bg3: #3a3a3c;
+      --border: rgba(255, 255, 255, 0.08);
+      --border2: rgba(255, 255, 255, 0.14);
+      --text: #f5f5f7;
+      --text2: #98989d;
+      --text3: #636366;
+      --blue: #0a84ff;
+      --blue-light: rgba(10, 132, 255, 0.12);
+      --blue-text: #409cff;
+      --green: #30d158;
+      --green-bg: rgba(48, 209, 88, 0.12);
+      --green-text: #30d158;
+      --red: #ff453a;
+      --red-bg: rgba(255, 69, 58, 0.12);
+      --red-text: #ff6961;
+      --amber: #ff9f0a;
+      --amber-bg: rgba(255, 159, 10, 0.12);
+      --amber-text: #ffa733;
+      --shadow: 0 1px 3px rgba(0, 0, 0, 0.3), 0 4px 12px rgba(0, 0, 0, 0.2);
+    }
+
+    * {
+      box-sizing: border-box;
+      margin: 0;
+      padding: 0;
+      -webkit-font-smoothing: antialiased;
+    }
+
+    select {
+      border-radius: 7px;
+      appearance: none;
+      -webkit-appearance: none;
+    }
+
+    body {
+      background: var(--bg);
+      color: var(--text);
+      font-family: -apple-system, BlinkMacSystemFont, 'SF Pro Display', 'Helvetica Neue', sans-serif;
+      min-height: 100vh;
+      display: flex;
+      transition: background 0.3s, color 0.3s;
+    }
+
+    .sidebar {
+      width: var(--sidebar-w);
+      min-height: 100vh;
+      background: var(--bg2);
+      border-right: 0.5px solid var(--border);
+      display: flex;
+      flex-direction: column;
+      padding: 1.5rem 1rem;
+      position: fixed;
+      top: 0;
+      left: 0;
+      bottom: 0;
+    }
+
+    .logo {
+      display: flex;
+      align-items: center;
+      gap: 10px;
+      padding: 0 8px;
+      margin-bottom: 2rem;
+    }
+
+    .logo-icon {
+      width: 32px;
+      height: 32px;
+      background: var(--blue);
+      border-radius: 8px;
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      color: white;
+      font-size: 16px;
+    }
+
+    .logo-text {
+      font-size: 17px;
+      font-weight: 600;
+      letter-spacing: -0.3px;
+    }
+
+    .nav-section {
+      margin-bottom: 1.5rem;
+    }
+
+    .nav-label {
+      font-size: 11px;
+      font-weight: 600;
+      color: var(--text3);
+      letter-spacing: 0.06em;
+      padding: 0 10px;
+      margin-bottom: 6px;
+      text-transform: uppercase;
+    }
+
+    .nav-item {
+      display: flex;
+      align-items: center;
+      gap: 10px;
+      padding: 8px 10px;
+      border-radius: 8px;
+      cursor: pointer;
+      font-size: 14px;
+      color: var(--text2);
+      border: none;
+      background: none;
+      width: 100%;
+      text-align: left;
+      transition: all 0.15s;
+    }
+
+    .nav-item:hover {
+      background: var(--bg3);
+      color: var(--text);
+    }
+
+    .nav-item.active {
+      background: var(--blue-light);
+      color: var(--blue);
+    }
+
+    .nav-item i {
+      font-size: 17px;
+      width: 20px;
+      text-align: center;
+    }
+
+    .nav-badge {
+      margin-left: auto;
+      background: var(--blue);
+      color: white;
+      font-size: 11px;
+      font-weight: 600;
+      padding: 1px 7px;
+      border-radius: 10px;
+    }
+
+    .sidebar-bottom {
+      margin-top: auto;
+      padding: 0 8px;
+    }
+
+    .theme-toggle {
+      display: flex;
+      align-items: center;
+      justify-content: space-between;
+      padding: 8px 2px;
+      font-size: 13px;
+      color: var(--text2);
+    }
+
+    .toggle-track {
+      width: 38px;
+      height: 22px;
+      background: var(--text3);
+      border-radius: 11px;
+      position: relative;
+      cursor: pointer;
+      transition: background 0.2s;
+      flex-shrink: 0;
+    }
+
+    .toggle-track.on {
+      background: var(--blue);
+    }
+
+    .toggle-thumb {
+      width: 18px;
+      height: 18px;
+      background: white;
+      border-radius: 50%;
+      position: absolute;
+      top: 2px;
+      left: 2px;
+      transition: left 0.2s;
+      box-shadow: 0 1px 3px rgba(0, 0, 0, 0.2);
+    }
+
+    .toggle-track.on .toggle-thumb {
+      left: 18px;
+    }
+
+    .main {
+      margin-left: var(--sidebar-w);
+      flex: 1;
+      display: flex;
+      flex-direction: column;
+    }
+
+    .topbar {
+      padding: 1rem 1.5rem;
+      display: flex;
+      align-items: center;
+      justify-content: space-between;
+      background: var(--bg2);
+      border-bottom: 0.5px solid var(--border);
+      position: sticky;
+      top: 0;
+      z-index: 10;
+      backdrop-filter: saturate(180%) blur(20px);
+    }
+
+    .topbar h2 {
+      font-size: 20px;
+      font-weight: 600;
+      letter-spacing: -0.3px;
+    }
+
+    .content {
+      padding: 1.5rem;
+    }
+
+    .btn {
+      background: var(--blue);
+      color: white;
+      border: none;
+      border-radius: 8px;
+      padding: 8px 16px;
+      font-size: 14px;
+      font-weight: 500;
+      cursor: pointer;
+      display: inline-flex;
+      align-items: center;
+      gap: 6px;
+      transition: opacity 0.15s;
+    }
+
+    .btn:hover {
+      opacity: 0.85;
+    }
+
+    .btn-sm {
+      padding: 6px 12px;
+      font-size: 13px;
+    }
+
+    .btn-ghost {
+      background: var(--bg3);
+      color: var(--text);
+      border: 0.5px solid var(--border);
+    }
+
+    .btn-ghost:hover {
+      background: var(--bg);
+      opacity: 1;
+    }
+
+    .btn-danger {
+      background: var(--red-bg);
+      color: var(--red-text);
+      border: none;
+    }
+
+    .btn-danger:hover {
+      opacity: 0.8;
+    }
+
+    .toolbar {
+      background: var(--bg2);
+      border: 0.5px solid var(--border);
+      border-radius: 12px;
+      padding: 12px 16px;
+      margin-bottom: 1.25rem;
+      display: flex;
+      align-items: center;
+      gap: 10px;
+      flex-wrap: wrap;
+      box-shadow: var(--shadow);
+    }
+
+    .toolbar-label {
+      font-size: 13px;
+      color: var(--text2);
+      white-space: nowrap;
+    }
+
+    select,
+    input {
+      background: var(--bg3);
+      border: 0.5px solid var(--border);
+      border-radius: 7px;
+      padding: 7px 11px;
+      color: var(--text);
+      font-size: 13px;
+      outline: none;
+      font-family: inherit;
+    }
+
+    select:focus,
+    input:focus {
+      border-color: var(--blue);
+      box-shadow: 0 0 0 3px rgba(0, 113, 227, 0.12);
+    }
+
+    input::placeholder {
+      color: var(--text3);
+    }
+
+    .stats {
+      display: grid;
+      grid-template-columns: repeat(4, 1fr);
+      gap: 10px;
+      margin-bottom: 1.25rem;
+    }
+
+    .stat {
+      background: var(--bg2);
+      border: 0.5px solid var(--border);
+      border-radius: 12px;
+      padding: 14px 16px;
+      box-shadow: var(--shadow);
+    }
+
+    .stat-label {
+      font-size: 12px;
+      color: var(--text2);
+      margin-bottom: 4px;
+    }
+
+    .stat-value {
+      font-size: 22px;
+      font-weight: 600;
+      letter-spacing: -0.5px;
+    }
+
+    .tasks {
+      display: flex;
+      flex-direction: column;
+      gap: 6px;
+    }
+
+    .task {
+      background: var(--bg2);
+      border: 0.5px solid var(--border);
+      border-radius: 12px;
+      padding: 13px 16px;
+      display: flex;
+      align-items: center;
+      gap: 12px;
+      box-shadow: var(--shadow);
+      transition: all 0.15s;
+      cursor: default;
+    }
+
+    .task:hover {
+      border-color: var(--border2);
+    }
+
+    .task.done {
+      opacity: 0.55;
+    }
+
+    .check {
+      width: 22px;
+      height: 22px;
+      border: 1.5px solid var(--border2);
+      border-radius: 50%;
+      cursor: pointer;
+      flex-shrink: 0;
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      transition: all 0.2s;
+    }
+
+    .check:hover {
+      border-color: var(--blue);
+    }
+
+    .check.checked {
+      background: var(--green);
+      border-color: var(--green);
+    }
+
+    .task-body {
+      flex: 1;
+      min-width: 0;
+    }
+
+    .task-title {
+      font-size: 14px;
+      font-weight: 500;
+      color: var(--text);
+      margin-bottom: 4px;
+    }
+
+    .task.done .task-title {
+      text-decoration: line-through;
+      color: var(--text3);
+    }
+
+    .task-meta {
+      display: flex;
+      align-items: center;
+      gap: 8px;
+      flex-wrap: wrap;
+    }
+
+    .meta {
+      font-size: 12px;
+      color: var(--text3);
+      display: flex;
+      align-items: center;
+      gap: 3px;
+    }
+
+    .meta i {
+      font-size: 12px;
+    }
+
+    .pill {
+      font-size: 11px;
+      font-weight: 500;
+      padding: 2px 8px;
+      border-radius: 20px;
+    }
+
+    .pill-active {
+      background: var(--amber-bg);
+      color: var(--amber-text);
+    }
+
+    .pill-done {
+      background: var(--green-bg);
+      color: var(--green-text);
+    }
+
+    .task-actions {
+      display: flex;
+      gap: 6px;
+      flex-shrink: 0;
+      opacity: 0;
+      transition: opacity 0.15s;
+    }
+
+    .task:hover .task-actions {
+      opacity: 1;
+    }
+
+    .icon-btn {
+      width: 28px;
+      height: 28px;
+      border-radius: 6px;
+      border: none;
+      background: transparent;
+      color: var(--text3);
+      cursor: pointer;
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      transition: all 0.15s;
+    }
+
+    .icon-btn:hover {
+      background: var(--red-bg);
+      color: var(--red-text);
+    }
+
+    .empty {
+      text-align: center;
+      padding: 4rem;
+      color: var(--text3);
+    }
+
+    .empty i {
+      font-size: 40px;
+      display: block;
+      margin-bottom: 10px;
+      color: var(--border2);
+    }
+
+    .empty p {
+      font-size: 14px;
+    }
+
+    .users-grid {
+      display: grid;
+      grid-template-columns: repeat(auto-fill, minmax(180px, 1fr));
+      gap: 10px;
+    }
+
+    .user-card {
+      background: var(--bg2);
+      border: 0.5px solid var(--border);
+      border-radius: 14px;
+      padding: 20px 16px;
+      display: flex;
+      flex-direction: column;
+      align-items: center;
+      gap: 8px;
+      text-align: center;
+      box-shadow: var(--shadow);
+      position: relative;
+      transition: all 0.15s;
+    }
+
+    .user-card:hover {
+      border-color: var(--border2);
+    }
+
+    .user-avatar {
+      width: 52px;
+      height: 52px;
+      border-radius: 50%;
+      background: var(--blue-light);
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      font-size: 17px;
+      font-weight: 600;
+      color: var(--blue);
+    }
+
+    .user-name {
+      font-size: 14px;
+      font-weight: 500;
+    }
+
+    .user-phone {
+      font-size: 12px;
+      color: var(--text3);
+    }
+
+    .user-id {
+      font-size: 11px;
+      color: var(--text3);
+    }
+
+    .user-del {
+      position: absolute;
+      top: 8px;
+      right: 8px;
+      width: 24px;
+      height: 24px;
+      border-radius: 6px;
+      border: none;
+      background: transparent;
+      color: var(--text3);
+      cursor: pointer;
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      opacity: 0;
+      transition: all 0.15s;
+    }
+
+    .user-card:hover .user-del {
+      opacity: 1;
+    }
+
+    .user-del:hover {
+      background: var(--red-bg);
+      color: var(--red-text);
+    }
+
+    .modal-bg {
+      position: fixed;
+      inset: 0;
+      background: rgba(0, 0, 0, 0.4);
+      display: none;
+      align-items: center;
+      justify-content: center;
+      z-index: 100;
+      backdrop-filter: blur(4px);
+    }
+
+    .modal-bg.open {
+      display: flex;
+    }
+
+    .modal {
+      background: var(--bg2);
+      border: 0.5px solid var(--border);
+      border-radius: 16px;
+      padding: 1.5rem;
+      width: 400px;
+      max-width: 94vw;
+      box-shadow: 0 20px 60px rgba(0, 0, 0, 0.2);
+    }
+
+    .modal h3 {
+      font-size: 17px;
+      font-weight: 600;
+      margin-bottom: 1.25rem;
+      letter-spacing: -0.2px;
+    }
+
+    .form-group {
+      margin-bottom: 12px;
+    }
+
+    .form-group label {
+      font-size: 12px;
+      color: var(--text2);
+      display: block;
+      margin-bottom: 5px;
+      font-weight: 500;
+    }
+
+    .form-group input,
+    .form-group select {
+      width: 100%;
+    }
+
+    .modal-actions {
+      display: flex;
+      gap: 8px;
+      justify-content: flex-end;
+      margin-top: 1.25rem;
+    }
+
+    .stat-block {
+      background: var(--bg2);
+      border: 0.5px solid var(--border);
+      border-radius: 12px;
+      padding: 1.25rem;
+      margin-bottom: 10px;
+      box-shadow: var(--shadow);
+    }
+
+    .stat-block h3 {
+      font-size: 13px;
+      font-weight: 600;
+      color: var(--text2);
+      margin-bottom: 12px;
+      text-transform: uppercase;
+      letter-spacing: 0.04em;
+    }
+
+    .stat-row {
+      display: flex;
+      justify-content: space-between;
+      align-items: center;
+      padding: 9px 0;
+      border-bottom: 0.5px solid var(--border);
+    }
+
+    .stat-row:last-child {
+      border-bottom: none;
+    }
+
+    .stat-row-label {
+      font-size: 14px;
+      color: var(--text2);
+    }
+
+    .stat-row-value {
+      font-size: 14px;
+      font-weight: 500;
+    }
+
+    .section {
+      display: none;
+    }
+
+    .section.active {
+      display: block;
+    }
+  </style>
+</head>
+
+<body>
+
+  <div class="sidebar">
+    <div class="logo">
+      <div class="logo-icon"><i class="ti ti-checklist"></i></div>
+      <span class="logo-text">TodoApp</span>
+    </div>
+
+    <div class="nav-section">
+      <div class="nav-label">Меню</div>
+      <button class="nav-item active" onclick="gotoSection('tasks',this)">
+        <i class="ti ti-list-check"></i> Задачи
+        <span class="nav-badge" id="badge-tasks">0</span>
+      </button>
+      <button class="nav-item" onclick="gotoSection('users',this)">
+        <i class="ti ti-person"></i> Пользователи
+        <span class="nav-badge" id="badge-users">0</span>
+      </button>
+      <button class="nav-item" onclick="gotoSection('stats',this)">
+        <i class="ti ti-chart-pie"></i> Статистика
+      </button>
+    </div>
+
+    <div class="sidebar-bottom">
+      <div class="theme-toggle">
+        <span style="display:flex;align-items:center;gap:6px;"><i class="ti ti-moon" style="font-size:15px"></i> Тёмная
+          тема</span>
+        <div class="toggle-track" id="theme-toggle" onclick="toggleTheme()">
+          <div class="toggle-thumb"></div>
+        </div>
+      </div>
+    </div>
+  </div>
+
+  <div class="main">
+    <div class="topbar">
+      <h2 id="page-title">Задачи</h2>
+      <div style="display:flex;align-items:center;gap:8px;">
+        <span id="current-user-label" style="font-size:13px;color:var(--text2);"></span>
+        <button class="btn btn-sm" id="top-btn" onclick="openCreateTask()"><i class="ti ti-plus"></i> Новая
+          задача</button>
+      </div>
+    </div>
+
+    <div class="content">
+
+      <div id="section-tasks" class="section active">
+        <div class="toolbar">
+          <span class="toolbar-label">Пользователь</span>
+          <select id="filter-user" onchange="loadTasks()" style="min-width:150px;"></select>
+          <div style="width:0.5px;height:20px;background:var(--border);"></div>
+          <span class="toolbar-label">Статус</span>
+          <select id="filter-status" onchange="renderTasks()">
+            <option value="all">Все</option>
+            <option value="active">Активные</option>
+            <option value="done">Выполненные</option>
+          </select>
+          <button class="btn btn-ghost btn-sm" onclick="loadTasks()" style="margin-left:auto;"><i
+              class="ti ti-refresh"></i></button>
+        </div>
+
+        <div class="stats">
+          <div class="stat">
+            <div class="stat-label">Всего</div>
+            <div class="stat-value" id="st-total" style="color:var(--blue)">0</div>
+          </div>
+          <div class="stat">
+            <div class="stat-label">Выполнено</div>
+            <div class="stat-value" id="st-done" style="color:var(--green)">0</div>
+          </div>
+          <div class="stat">
+            <div class="stat-label">Активных</div>
+            <div class="stat-value" id="st-active" style="color:var(--amber)">0</div>
+          </div>
+          <div class="stat">
+            <div class="stat-label">Прогресс</div>
+            <div class="stat-value" id="st-pct" style="color:var(--text2)">0%</div>
+          </div>
+        </div>
+
+        <div id="task-list" class="tasks">
+          <div class="empty"><i class="ti ti-loader"></i>
+            <p>Загрузка...</p>
+          </div>
+        </div>
+      </div>
+
+      <div id="section-users" class="section">
+        <div class="toolbar">
+          <span class="toolbar-label">Пользователи</span>
+          <button class="btn btn-sm" style="margin-left:auto;" onclick="openCreateUser()"><i class="ti ti-plus"></i>
+            Добавить</button>
+          <button class="btn btn-ghost btn-sm" onclick="loadUsers()"><i class="ti ti-refresh"></i></button>
+        </div>
+        <div id="user-list" class="users-grid"></div>
+      </div>
+
+      <div id="section-stats" class="section">
+        <div id="stats-content">
+          <div class="empty"><i class="ti ti-loader"></i>
+            <p>Загрузка...</p>
+          </div>
+        </div>
+      </div>
+
+    </div>
+  </div>
+
+  <div class="modal-bg" id="modal-task">
+    <div class="modal">
+      <h3>Новая задача</h3>
+      <div class="form-group"><label>Название</label><input id="t-title" placeholder="Что нужно сделать?" /></div>
+      <div class="form-group"><label>Описание</label><input id="t-desc" placeholder="Необязательно..." /></div>
+      <div class="form-group"><label>Пользователь</label><select id="t-user" style="width:100%;"></select></div>
+      <div class="modal-actions">
+        <button class="btn btn-ghost btn-sm" onclick="closeModal('modal-task')">Отмена</button>
+        <button class="btn btn-sm" onclick="createTask()">Создать</button>
+      </div>
+    </div>
+  </div>
+
+  <div class="modal-bg" id="modal-user">
+    <div class="modal">
+      <h3>Новый пользователь</h3>
+      <div class="form-group"><label>Полное имя</label><input id="u-name" placeholder="Иван Иванов" /></div>
+      <div class="form-group"><label>Телефон</label><input id="u-phone" placeholder="+79991234567" /></div>
+      <div class="modal-actions">
+        <button class="btn btn-ghost btn-sm" onclick="closeModal('modal-user')">Отмена</button>
+        <button class="btn btn-sm" onclick="createUser()">Создать</button>
+      </div>
+    </div>
+  </div>
+
+  <script>
+    const API = '/api/v1';
+    let tasks = [], users = [];
+
+    async function api(path, method = 'GET', body = null) {
+      const opts = { method, headers: { 'Content-Type': 'application/json' } };
+      if (body) opts.body = JSON.stringify(body);
+      const r = await fetch(API + path, opts);
+      if (!r.ok) { const e = await r.json().catch(() => ({})); throw new Error(e.error || r.status); }
+      return r.json().catch(() => null);
+    }
+
+    function esc(s) { return String(s).replace(/&/g, '&amp;').replace(/</g, '&lt;').replace(/>/g, '&gt;'); }
+    function initials(n) { return n.split(' ').slice(0, 2).map(w => w[0]).join('').toUpperCase(); }
+    function fmtDate(s) { return s ? new Date(s).toLocaleDateString('ru', { day: 'numeric', month: 'short' }) : '' }
+    function timeSince(s) {
+      const d = Math.floor((Date.now() - new Date(s)) / 60000);
+      if (d < 60) return d + 'м'; if (d < 1440) return Math.floor(d / 60) + 'ч';
+      return Math.floor(d / 1440) + 'д';
+    }
+
+    async function loadAll() { await loadUsers(); await loadTasks(); }
+
+    async function loadUsers() {
+      try { const d = await api('/users?limit=100&offset=0'); users = Array.isArray(d) ? d : []; }
+      catch (e) { users = []; }
+      updateSelects(); renderUsers();
+      document.getElementById('badge-users').textContent = users.length;
+    }
+
+    async function loadTasks() {
+      const uid = document.getElementById('filter-user').value;
+      const p = new URLSearchParams({ limit: 100, offset: 0 });
+      if (uid) p.set('user_id', uid);
+      try { const d = await api('/tasks?' + p); tasks = Array.isArray(d) ? d : []; }
+      catch (e) { tasks = []; }
+      renderTasks();
+    }
+
+    function updateSelects() {
+      const opts = users.map(u => `<option value="${u.id}">${esc(u.full_name)}</option>`).join('');
+      document.getElementById('filter-user').innerHTML = '<option value="">Все пользователи</option>' + opts;
+      document.getElementById('t-user').innerHTML = opts || '<option>Нет пользователей</option>';
+      if (users.length) document.getElementById('current-user-label').textContent = '';
+    }
+
+    function renderTasks() {
+      const st = document.getElementById('filter-status').value;
+      let shown = tasks;
+      if (st === 'active') shown = tasks.filter(t => !t.completed);
+      if (st === 'done') shown = tasks.filter(t => t.completed);
+      const total = tasks.length, done = tasks.filter(t => t.completed).length;
+      document.getElementById('st-total').textContent = total;
+      document.getElementById('st-done').textContent = done;
+      document.getElementById('st-active').textContent = total - done;
+      document.getElementById('st-pct').textContent = total ? Math.round(done / total * 100) + '%' : '0%';
+      document.getElementById('badge-tasks').textContent = total - done;
+      const list = document.getElementById('task-list');
+      if (!shown.length) { list.innerHTML = '<div class="empty"><i class="ti ti-inbox"></i><p>Задач нет</p></div>'; return; }
+      list.innerHTML = shown.map(t => {
+        const u = users.find(u => u.id === t.author_user_id);
+        const uname = u ? u.full_name : 'Пользователь ' + t.author_user_id;
+        const tj = JSON.stringify(t).replace(/"/g, '&quot;');
+        return `<div class="task ${t.completed ? 'done' : ''}">
+      <div class="check ${t.completed ? 'checked' : ''}" onclick='toggleTask(${tj})'>
+        ${t.completed ? '<i class="ti ti-check" style="font-size:13px;color:white"></i>' : ''}
+      </div>
+      <div class="task-body">
+        <div class="task-title">${esc(t.title)}</div>
+        ${t.description ? `<div style="font-size:13px;color:var(--text3);margin-bottom:4px">${esc(t.description)}</div>` : ''}
+        <div class="task-meta">
+          <span class="meta"><i class="ti ti-user"></i>${esc(uname)}</span>
+          <span class="meta"><i class="ti ti-calendar"></i>${fmtDate(t.created_at)}</span>
+          <span class="pill ${t.completed ? 'pill-done' : 'pill-active'}">${t.completed ? 'Выполнено' : 'В работе · ' + timeSince(t.created_at)}</span>
+        </div>
+      </div>
+      <div class="task-actions">
+        <button class="icon-btn" onclick="deleteTask(${t.id})" aria-label="Удалить"><i class="ti ti-trash" style="font-size:15px"></i></button>
+      </div>
+    </div>`;
+      }).join('');
+    }
+
+    function renderUsers() {
+      const list = document.getElementById('user-list');
+      if (!users.length) { list.innerHTML = '<div class="empty"><i class="ti ti-users"></i><p>Пользователей нет</p></div>'; return; }
+      list.innerHTML = users.map(u => `
+    <div class="user-card">
+      <button class="user-del" onclick="deleteUser(${u.id})"><i class="ti ti-x" style="font-size:13px"></i></button>
+      <div class="user-avatar">${initials(u.full_name)}</div>
+      <div class="user-name">${esc(u.full_name)}</div>
+      ${u.phone_number ? `<div class="user-phone">${esc(u.phone_number)}</div>` : ''}
+      <div class="user-id">ID ${u.id}</div>
+    </div>`).join('');
+    }
+
+    function renderStats() {
+      const total = tasks.length, done = tasks.filter(t => t.completed).length;
+      document.getElementById('stats-content').innerHTML = `
+    <div class="stat-block">
+      <h3>Задачи</h3>
+      <div class="stat-row"><span class="stat-row-label">Всего</span><span class="stat-row-value" style="color:var(--blue)">${total}</span></div>
+      <div class="stat-row"><span class="stat-row-label">Выполнено</span><span class="stat-row-value" style="color:var(--green)">${done}</span></div>
+      <div class="stat-row"><span class="stat-row-label">Активных</span><span class="stat-row-value" style="color:var(--amber)">${total - done}</span></div>
+      <div class="stat-row"><span class="stat-row-label">Прогресс</span><span class="stat-row-value">${total ? Math.round(done / total * 100) : 0}%</span></div>
+    </div>
+    <div class="stat-block">
+      <h3>По пользователям</h3>
+      ${users.map(u => {
+        const ut = tasks.filter(t => t.author_user_id === u.id);
+        const ud = ut.filter(t => t.completed).length;
+        return `<div class="stat-row"><span class="stat-row-label">${esc(u.full_name)}</span><span class="stat-row-value" style="font-size:13px;color:var(--text2)">${ud} / ${ut.length}</span></div>`;
+      }).join('')}
+    </div>`;
+    }
+
+    async function toggleTask(t) {
+      try { await api('/tasks/' + t.id, 'PATCH', { completed: !t.completed }); loadTasks(); }
+      catch (e) { alert('Ошибка: ' + e.message); }
+    }
+    async function deleteTask(id) {
+      if (!confirm('Удалить задачу?')) return;
+      try { await api('/tasks/' + id, 'DELETE'); loadTasks(); }
+      catch (e) { alert('Ошибка: ' + e.message); }
+    }
+    async function deleteUser(id) {
+      if (!confirm('Удалить пользователя?')) return;
+      try { await api('/users/' + id, 'DELETE'); loadAll(); }
+      catch (e) { alert('Ошибка: ' + e.message); }
+    }
+    async function createTask() {
+      const title = document.getElementById('t-title').value.trim();
+      const desc = document.getElementById('t-desc').value.trim();
+      const uid = parseInt(document.getElementById('t-user').value);
+      if (!title || !uid) return alert('Укажите название и пользователя');
+      try {
+        const b = { title, author_user_id: uid }; if (desc) b.description = desc;
+        await api('/tasks', 'POST', b);
+        closeModal('modal-task');
+        document.getElementById('t-title').value = '';
+        document.getElementById('t-desc').value = '';
+        loadTasks();
+      } catch (e) { alert('Ошибка: ' + e.message); }
+    }
+    async function createUser() {
+      const name = document.getElementById('u-name').value.trim();
+      const phone = document.getElementById('u-phone').value.trim();
+      if (!name) return alert('Укажите имя');
+      try {
+        const b = { full_name: name }; if (phone) b.phone_number = phone;
+        await api('/users', 'POST', b);
+        closeModal('modal-user');
+        document.getElementById('u-name').value = '';
+        document.getElementById('u-phone').value = '';
+        loadAll();
+      } catch (e) { alert('Ошибка: ' + e.message); }
+    }
+
+    function openCreateTask() { document.getElementById('modal-task').classList.add('open'); }
+    function openCreateUser() { document.getElementById('modal-user').classList.add('open'); }
+    function closeModal(id) { document.getElementById(id).classList.remove('open'); }
+
+    const sections = { tasks: 'Задачи', users: 'Пользователи', stats: 'Статистика' };
+    function gotoSection(name, btn) {
+      document.querySelectorAll('.nav-item').forEach(b => b.classList.remove('active'));
+      document.querySelectorAll('.section').forEach(s => s.classList.remove('active'));
+      btn.classList.add('active');
+      document.getElementById('section-' + name).classList.add('active');
+      document.getElementById('page-title').textContent = sections[name];
+      const tb = document.getElementById('top-btn');
+      if (name === 'tasks') { tb.style.display = ''; tb.onclick = openCreateTask; tb.innerHTML = '<i class="ti ti-plus"></i> Новая задача'; }
+      else if (name === 'users') { tb.style.display = ''; tb.onclick = openCreateUser; tb.innerHTML = '<i class="ti ti-plus"></i> Добавить'; }
+      else tb.style.display = 'none';
+      if (name === 'stats') renderStats();
+    }
+
+    function toggleTheme() {
+      const html = document.documentElement;
+      const isDark = html.getAttribute('data-theme') === 'dark';
+      html.setAttribute('data-theme', isDark ? 'light' : 'dark');
+      document.getElementById('theme-toggle').classList.toggle('on', !isDark);
+    }
+
+    document.querySelectorAll('.modal-bg').forEach(m => {
+      m.addEventListener('click', e => { if (e.target === m) m.classList.remove('open'); });
+    });
+
+    loadAll();
+  </script>
+</body>
+
+</html>
