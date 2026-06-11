@@ -8,8 +8,19 @@ import (
 	core_http_response "github.com/jettyjunk/goland-todoapp/internal/core/transport/http/response"
 )
 
-type GetTaskReponse TaskDTOResponse
+type GetTaskResponse TaskDTOResponse
 
+// GetTask 	godoc
+// @Summary 	Получение задачи
+// @Description Получение существующей задачи в системе по её ID
+// @Tags 		tasks
+// @Produce 	json
+// @Param 		id 	path int true 							  "ID" получаемой задачи"
+// @Success 	200	{object} GetTaskResponse 				  "Успешное получение задачи"
+// @Failure		400 {object} core_http_response.ErrorResponse "Bad request"
+// @Failure		404 {object} core_http_response.ErrorResponse "Task not found"
+// @Failure 	500 {object} core_http_response.ErrorResponse "Internal server error"
+// @Router 		/tasks/{id}  [get]
 func (h *TasksHTTPHandler) GetTask(w http.ResponseWriter, r *http.Request) {
 	ctx := r.Context()
 	log := core_logger.FromContext(ctx)
@@ -29,7 +40,7 @@ func (h *TasksHTTPHandler) GetTask(w http.ResponseWriter, r *http.Request) {
 		return
 	}
 
-	response := GetTaskReponse(taskDTOFromDomain(task))
+	response := GetTaskResponse(taskDTOFromDomain(task))
 
 	responseHandler.JsonResponse(response, http.StatusOK)
 }
