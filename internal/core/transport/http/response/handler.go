@@ -23,6 +23,15 @@ func NewHTTPResponseHandler(log *core_logger.Logger, w http.ResponseWriter) *HTT
 	}
 }
 
+func (h *HTTPResponseHandler) HTMLResponse(html []byte) {
+	h.w.WriteHeader(http.StatusOK)
+
+	h.w.Header().Set("Content-Type", "text/html; charset=utf-8")
+	if _, err := h.w.Write(html); err != nil {
+		h.log.Error("write HTML HTTP response", zap.Error(err))
+	}
+}
+
 func (h *HTTPResponseHandler) NoContentResponse() {
 	h.w.WriteHeader(http.StatusNoContent)
 }

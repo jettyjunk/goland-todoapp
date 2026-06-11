@@ -29,14 +29,22 @@ func NewHTTPServer(config Config, log *core_logger.Logger, middleware ...core_ht
 	}
 }
 
-func (s *HTTPServer) RegisterAPIRouter(routers ...*APIVersionRoter) {
-	for _, router := range routers {
+func (s *HTTPServer) RegisterAPIRouter(routes ...*APIVersionRoter) {
+	for _, router := range routes {
 		prefix := "/api/" + string(router.apiVersion)
 
 		s.mux.Handle(
 			prefix+"/",
 			http.StripPrefix(prefix, router.WithMiddleware()),
 		)
+	}
+}
+
+func (s *HTTPServer) RegisterRoutes(routes ...Route) {
+	for _, router := range routes {
+		pattern := fmt.Sprintf("%s %s", router.Method, router.Path)
+
+		s.mux.Handle(pattern, router.WithMiddleware())
 	}
 }
 
